@@ -18,8 +18,13 @@ export class DataStore{
     }
 
     // 保存数据
-    put(key,value){
-        this.map.set(key,value);
+    put(key,val){
+        if(typeof val == 'function'){
+            val = new val();
+        }
+        this.map.set(key,val);
+        // 返回原对象,方便链式调用
+        return this;
     }
 
     // 获取方法
@@ -27,8 +32,8 @@ export class DataStore{
         return this.map.get(key);
     }
     // 销毁所有游戏数据
-    destory(){
-        for(let val of this.map.values){
+    destroy(){
+        for(let val of this.map.values()){
             val = null;
         }
     }
