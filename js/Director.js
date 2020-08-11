@@ -3,6 +3,7 @@
 import { DataStore } from "./base/DataStore";
 import { UpPiPe } from "./runtime/UpPipe";
 import { DownPipe } from "./runtime/DownPipe";
+import { Extra } from "./Extra";
 
 export class Director {
     constructor() {
@@ -60,6 +61,7 @@ export class Director {
         let land = this.store.get('land');
         let birds = this.store.get('birds');
         let pipes = this.store.get('pipes');
+        let score = this.store.get('score');
         if (birds.birdsY[0] <= 0 || birds.birdsY[0] > canvas.height - land.height - birds.birdsHeight[0]) {
             this.isGameOver = true;
             return;
@@ -67,9 +69,9 @@ export class Director {
         // 判断与水管是否相撞
         const birdsBorder = {
             top: birds.birdsY[0],
-			right: birds.birdsX[0]+birds.birdsWidth[0],
-			bottom: birds.birdsY[0]+birds.birdsHeight[0],
-			left: birds.birdsX[0]
+            right: birds.birdsX[0] + birds.birdsWidth[0],
+            bottom: birds.birdsY[0] + birds.birdsHeight[0],
+            left: birds.birdsX[0]
         }
         for (let i = 0; i < pipes.length; i++) {
             const p = pipes[i];
@@ -83,6 +85,12 @@ export class Director {
             if (this.isStrike(birdsBorder, pipeBorder)) {
                 this.isGameOver = true;
             }
+        }
+        // 判断得分(canAdd为true,且小鸟的左边大于小鸟右边)
+        if (score.canAdd && birds.birdsX[0] > pipes[0].x + pipes[0].width) {
+            new Extra().through();
+            score.scoreNumber += 5;
+            score.canAdd = false;
         }
     }
 
@@ -99,6 +107,8 @@ export class Director {
             if (pipes[0].x + pipes[0].width <= 0 && pipes.length == 4) {
                 pipes.shift();
                 pipes.shift();
+                // 打开计分器
+                this.store.get('score').canAdd = true;
             }
             // 当水管长度小于等于2,且上一组水管到达中间的时候,生成下一组水管
             if (pipes.length <= 2 && (pipes[0].x + pipes[0].width) < this.store.canvas.width / 2) {
@@ -109,11 +119,20 @@ export class Director {
             })
             this.store.get('birds').draw();
             this.store.get('land').draw();
+            this.store.get('score').draw();
 
             // setInterval是设置固定毫秒值来运行
             // requestAnimationFrame方法是根据浏览器的刷新帧率来运行
             requestAnimationFrame(() => this.run());
         } else {//游戏结束
+            new Extra().boom();
+            this.store.get('background').draw();
+            this.store.get('pipes').forEach(val => {
+                val.draw()
+            })
+            this.store.get('birds').draw();
+            this.store.get('land').draw();
+            this.store.get('score').draw();
             // 关掉计时器
             cancelAnimationFrame(this.timer);
             // 画图标

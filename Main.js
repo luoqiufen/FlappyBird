@@ -7,18 +7,22 @@ import { Director } from "./js/Director";
 import { Land } from "./js/runtime/Land";
 import { Birds } from "./js/player/Birds";
 import { StartButton } from "./js/player/StartButton";
+import { Score } from "./js/player/Score";
+import { Extra } from "./js/Extra";
 
 export class Main{
     constructor(){ //构造方法,在创建对象时会自动执行
         console.log('游戏开始');
         // 获取资源加载器
-        this.loader = new ResourceLoader;
+        this.loader = new ResourceLoader();
         // 获取变量池
         this.store = DataStore.getInstance();
         // 获取导演类
         this.director = Director.getInstance();
         // 获取canvas
         this.canvas = wx.createCanvas();
+        // 获取Extra对象
+        this.ex = new Extra();
         // 获取ctx
         this.ctx = this.canvas.getContext('2d');
         // 当图片加载完成时执行后续代码
@@ -31,7 +35,21 @@ export class Main{
         this.store.canvas = this.canvas;
         this.store.ctx = this.ctx;
         this.store.res = map;
-        
+
+        // 调用微信中的一些API
+        this.ex.bgm();  
+        /* this.ex.getUser((err,res) => {
+            if(err){//表示没有授权
+                this.ex.userButton();
+            }else{//有授权信息
+
+            }
+        }); */
+        // this.ex.getTelInfo();
+        // this.ex.download();
+        // this.ex.upload();
+        this.ex.send();
+
         this.init();
     }
 
@@ -47,15 +65,18 @@ export class Main{
             .put('pipes',[])
             .put('birds',Birds)
             .put('startButton',StartButton)
+            .put('score',Score)
         
         // 执行run方法之前先调用一次创建水管的方法
         this.director.createPipes();
         this.director.run();
-        this.registerEvent()
+        this.registerEvent();
     }
 
     registerEvent(){
         wx.onTouchStart((res) => {
+            // this.ex.socket();
+            
             // 当游戏结束时,点击重新开始
             // 游戏没有结束时,触发小鸟向上的事件
             if(this.director.isGameOver){

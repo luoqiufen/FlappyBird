@@ -35,7 +35,7 @@ export class Birds extends Sprite{
         }
         this.index = Math.floor(this.count/10);
         // 小鸟的自由落体运动
-        const g = 0.98/5;//模拟重力加速度
+        const g = 0.98/3;//模拟重力加速度
         const offSetUp = 30;//向上的偏移量
         const offSetY = (g*this.time*(this.time-offSetUp))/2
         for(let i = 0;i<=2;i++){
