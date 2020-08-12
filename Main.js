@@ -75,7 +75,6 @@ export class Main{
 
     registerEvent(){
         wx.onTouchStart((res) => {
-            // this.ex.socket();
             
             // 当游戏结束时,点击重新开始
             // 游戏没有结束时,触发小鸟向上的事件

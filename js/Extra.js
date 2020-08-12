@@ -132,7 +132,7 @@ export class Extra {
     // socket连接
     socket() {
         wx.connectSocket({
-            url: 'wss://localhost:4000',
+            url: 'ws://localhost:4000',
             success(res) {
                 console.log('连接成功');
             }, fail(err) {
@@ -151,6 +151,10 @@ export class Extra {
                 fail(err) {
                     console.log('失败');
                 }
+            })
+
+            wx.onSocketMessage((data) => {
+                console.log(data);
             })
         })
     }
